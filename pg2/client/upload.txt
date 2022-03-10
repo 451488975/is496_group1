@@ -1,0 +1,1 @@
+Note: you can create a local file called "upload.txt" with random strings to test the UP operation.
