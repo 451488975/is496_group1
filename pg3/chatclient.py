@@ -23,7 +23,7 @@ BUFFER = 1024
 
 
 """
-The thread target fuction to handle any incoming message from the server.
+The thread target function to handle any incoming message from the server.
 Args:
     None
 Returns:
