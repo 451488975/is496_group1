@@ -21,6 +21,7 @@ from utilities import *
 # Define a buffer size for the message to be read from the TCP socket
 BUFFER = 4096
 
+
 # Initiate socket
 # Params: hostname (string), port number (int)
 def init_sock(host, port):
