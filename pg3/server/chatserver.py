@@ -60,27 +60,29 @@ def chatroom (conn):
     # TODO: Use a loop to handle the operations (i.e., BM, PM, EX)
     while True:
         # Receive command from client
-        data = conn.recv(BUFFER).decode('utf-8').split(':')
-        command = data[1]
+        command = conn.recv(BUFFER).decode('utf-8')
 
         # According to the command, execute different function
         if command == 'EX':
-            index = CLIENTS.index(conn)
-            CLIENTS.remove(conn)
-            USERNAME.remove(USERNAME[index])
-            conn.close()
             break
         elif command == 'BM':
             message = conn.recv(BUFFER)
             broadcast(message, conn)
 
+    index = CLIENTS.index(conn)
+    CLIENTS.remove(conn)
+    USERNAME.remove(USERNAME[index])
+    conn.close()
+
 
 def broadcast(message, conn):
     for client in CLIENTS:
-        if client == conn:
-            client.send('Public message sent!'.encode('utf-8'))
-        else:
-            client.send('\n****Incoming public message****: '.encode('utf-8') + message)
+        if client != conn:
+            client.send('\n**** Incoming public message ****: '.encode('utf-8') + message)
+        # if client == conn:
+        #     client.send('Public message sent!'.encode('utf-8'))
+        # else:
+        #     client.send('\n**** Incoming public message ****: '.encode('utf-8') + message)
 
 
 if __name__ == '__main__':
@@ -122,7 +124,7 @@ if __name__ == '__main__':
                 print('Failed to accept.')
                 sys.exit()
 
-            # TODO: initiate a thread for the connected user
+            # Initiate a thread for the connected user
             t1 = threading.Thread(target=chatroom, args=(c,))
             t1.start()
 

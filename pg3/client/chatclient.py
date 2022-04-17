@@ -10,7 +10,6 @@
 
 
 # Import any necessary libraries below
-from email import message
 import socket
 import threading
 import sys, os, struct
@@ -34,9 +33,9 @@ def accept_messages(sock):
     while True:
         try:
             message = sock.recv(BUFFER).decode('utf-8')
-            if '****Incoming' in message:
+            if '**** Incoming' in message:
                 print(message)
-                print('>Please enter a command (BM: Broadcast Messaging, PM: Private Messaging, EX: Exit')
+                print('>Please enter a command (BM: Broadcast Messaging, PM: Private Messaging, EX: Exit)\n> ', end=' ')
         except:
             sock.close()
             break
@@ -82,24 +81,25 @@ if __name__ == '__main__':
         sock.send(password.encode('utf-8'))
         pwd_correct = struct.unpack('i', sock.recv(4))[0]
 
-    # TODO: initiate a thread for receiving message
+    # Initiate a thread for receiving message
     t1 = threading.Thread(target=accept_messages, args=(sock,)) 
     t1.start()
 
     while True:
         # Wait for user to input command
-        print('>Please enter a command (BM: Broadcast Messaging, PM: Private Messaging, EX: Exit')
+        print('>Please enter a command (BM: Broadcast Messaging, PM: Private Messaging, EX: Exit)')
         command = input('> ')
-        data = 'C:' + command # Add 'C' to indicate this command message
 
         # Send command to server
-        sock.send(data.encode('utf-8'))
+        sock.send(command.encode('utf-8'))
 
         # According to the command, execute different function
         if command == 'EX':
             print('Bye!')
-            sock.close()
             break
         elif command == 'BM':
             message = input('>Enter the public message: ')
             sock.send(message.encode('utf-8'))
+            print('Public message sent!')
+
+    sock.close()
