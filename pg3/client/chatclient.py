@@ -10,6 +10,7 @@
 
 
 # Import any necessary libraries below
+from email import message
 import socket
 import threading
 import sys, os, struct
@@ -29,14 +30,19 @@ Returns:
     None
 Hint: you can use the first character of the message to distinguish different types of message
 """
-def accept_messages():
-    
+def accept_messages(sock):
+    while True:
+        try:
+            message = sock.recv(BUFFER).decode('utf-8')
+            if '****Incoming' in message:
+                print(message)
+                print('>Please enter a command (BM: Broadcast Messaging, PM: Private Messaging, EX: Exit')
+        except:
+            sock.close()
+            break
 
 
-
-
-
-if __name__ == '__main__': 
+if __name__ == '__main__':
     # Validate input arguments
     try:
         host = socket.gethostbyname(HOSTNAME)
@@ -77,10 +83,9 @@ if __name__ == '__main__':
         pwd_correct = struct.unpack('i', sock.recv(4))[0]
 
     # TODO: initiate a thread for receiving message
-    t1 = threading.Thread(target=accept_messages)
+    t1 = threading.Thread(target=accept_messages, args=(sock,)) 
     t1.start()
 
-    # TODO: use a loop to handle the operations (i.e., BM, PM, EX)
     while True:
         # Wait for user to input command
         print('>Please enter a command (BM: Broadcast Messaging, PM: Private Messaging, EX: Exit')
@@ -92,6 +97,9 @@ if __name__ == '__main__':
 
         # According to the command, execute different function
         if command == 'EX':
+            print('Bye!')
             sock.close()
             break
-    print('Bye!')
+        elif command == 'BM':
+            message = input('>Enter the public message: ')
+            sock.send(message.encode('utf-8'))

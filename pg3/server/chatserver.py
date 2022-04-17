@@ -3,7 +3,7 @@
 # Name and NetId of each member:
 # Member 1: River Liu, ll24
 # Member 2: Yuxuan Jiang, yj26
-# Member 3: Zhizhou Xu, zhizhou6
+# Member 3: Zhizhou Xu, zhizhou6 11
 
 # Note: 
 # This starter code is optional. Feel free to develop your own solution. 
@@ -18,6 +18,8 @@ import sys, os, struct
 BUFFER = 1024
 HOST = '192.17.61.22'
 PORT = int(sys.argv[1])
+CLIENTS = []
+USERNAME = []
 
 
 """
@@ -31,6 +33,7 @@ def chatroom (conn):
     # Login/register the user
     username = conn.recv(BUFFER).decode('utf-8')
     user_confirm = 0
+    USERNAME.append(username)
     with open('users.txt', 'r') as f:
         for line in f:
             user = line.split(' ')
@@ -40,7 +43,7 @@ def chatroom (conn):
                 conn.send(struct.pack('i', 1)) # send user_existed
                 user_confirm = 1
                 password = conn.recv(BUFFER).decode('utf-8')
-                while password != user[1]:
+                while password != user[1].replace("\n", ""):
                     conn.send(struct.pack('i', 0)) # send pwd_correct
                     password = conn.recv(BUFFER).decode('utf-8')
                 conn.send(struct.pack('i', 1)) # send pwd_correct
@@ -62,8 +65,22 @@ def chatroom (conn):
 
         # According to the command, execute different function
         if command == 'EX':
+            index = CLIENTS.index(conn)
+            CLIENTS.remove(conn)
+            USERNAME.remove(USERNAME[index])
             conn.close()
             break
+        elif command == 'BM':
+            message = conn.recv(BUFFER)
+            broadcast(message, conn)
+
+
+def broadcast(message, conn):
+    for client in CLIENTS:
+        if client == conn:
+            client.send('Public message sent!'.encode('utf-8'))
+        else:
+            client.send('\n****Incoming public message****: '.encode('utf-8') + message)
 
 
 if __name__ == '__main__':
@@ -100,6 +117,7 @@ if __name__ == '__main__':
             try:
                 c, addr = serversock.accept()
                 print('Connection established.')
+                CLIENTS.append(c)
             except socket.error:
                 print('Failed to accept.')
                 sys.exit()
