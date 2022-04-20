@@ -25,7 +25,7 @@ USERNAME = []
 """
 The thread target function to handle the requests by a user after a socket connection is established.
 Args:
-    args: any arguments to be passed to the thread
+    conn: specific connection with the client
 Returns:
     None
 """
@@ -57,7 +57,7 @@ def chatroom (conn):
             f.write(f'\n{username} {password}')
         conn.send(struct.pack('i', 1))  # send pwd_correct
 
-    # TODO: Use a loop to handle the operations (i.e., BM, PM, EX)
+    # Use a loop to handle the operations (i.e., BM, PM, EX)
     while True:
         # Receive command from client
         data = conn.recv(BUFFER).decode('utf-8').split(':')
@@ -94,13 +94,13 @@ def broadcast(message, conn):
         if client == conn:
             client.send('Public message sent!'.encode('utf-8'))
         else:
-            client.send('\n****Incoming public message****: '.encode('utf-8') + message)
+            client.send('\n**** Incoming public message ****: '.encode('utf-8') + message)
 
 
 def private_message(message, conn, user):
     conn.send('Private message sent!'.encode('utf-8'))
     index = USERNAME.index(user)
-    CLIENTS[index].send('\n****Incoming private message****: '.encode('utf-8') + message)
+    CLIENTS[index].send('\n**** Incoming private message ****: '.encode('utf-8') + message)
 
 
 if __name__ == '__main__':
@@ -142,7 +142,7 @@ if __name__ == '__main__':
                 print('Failed to accept.')
                 sys.exit()
 
-            # TODO: initiate a thread for the connected user
+            # Initiate a thread for the connected user
             t1 = threading.Thread(target=chatroom, args=(c,))
             t1.start()
 
