@@ -10,6 +10,7 @@
 
 
 # Import any necessary libraries below
+from email import message
 import socket
 import threading
 import sys, os, struct
@@ -19,6 +20,7 @@ BUFFER = 1024
 HOSTNAME = sys.argv[1]
 PORT = int(sys.argv[2])
 USERNAME = sys.argv[3]
+FLAG = 0
 
 
 """
@@ -33,12 +35,19 @@ def accept_messages(sock):
     while True:
         try:
             message = sock.recv(BUFFER).decode('utf-8')
-            if '**** Incoming' in message:
-                print(message)
-                print('>Please enter a command (BM: Broadcast Messaging, PM: Private Messaging, EX: Exit)\n> ', end=' ')
+            if FLAG == 0:
+                print(message + '\n')
+                print('>Please enter a command (BM: Broadcast Messaging, PM: Private Messaging, EX: Exit')
+            elif FLAG == 1:
+                print(message + '\n')
+                print('>Enter the public message: ')
+            elif FLAG == 2:
+                print(message + '\n')
+                print('>Enter the private message: ')
         except:
             sock.close()
             break
+    
 
 
 if __name__ == '__main__':
@@ -81,25 +90,44 @@ if __name__ == '__main__':
         sock.send(password.encode('utf-8'))
         pwd_correct = struct.unpack('i', sock.recv(4))[0]
 
-    # Initiate a thread for receiving message
+    # TODO: initiate a thread for receiving message
     t1 = threading.Thread(target=accept_messages, args=(sock,)) 
     t1.start()
 
     while True:
         # Wait for user to input command
-        print('>Please enter a command (BM: Broadcast Messaging, PM: Private Messaging, EX: Exit)')
-        command = input('> ')
+        print('>Please enter a command (BM: Broadcast Messaging, PM: Private Messaging, EX: Exit')
+        command = input()
+        data = 'C:' + command # Add 'C' to indicate this command message
 
         # Send command to server
-        sock.send(command.encode('utf-8'))
+        sock.send(data.encode('utf-8'))
 
         # According to the command, execute different function
         if command == 'EX':
             print('Bye!')
+            sock.close()
             break
         elif command == 'BM':
-            message = input('>Enter the public message: ')
+            FLAG = 1
+            message = input('>Enter the public message: \n')
             sock.send(message.encode('utf-8'))
-            print('Public message sent!')
-
-    sock.close()
+            FLAG = 0
+        elif command == 'PM':
+            print('Online users currently:')
+            users = sock.recv(BUFFER).decode('utf-8')
+            print(users)
+            user = input('>Please select a user to contact: ')
+            user_len = len(user.encode('utf-8'))
+            sock.send(struct.pack('i', user_len))
+            sock.send(user.encode('utf-8'))
+            user_online = struct.unpack('i', sock.recv(4))[0]
+            while user_online == 0:
+                user = input('>' + user + 'is not online, please select an online user: ')
+                user_len = len(user.encode('utf-8'))
+                sock.send(struct.pack('i', user_len))
+                sock.send(user.encode('utf-8'))
+            FLAG = 2
+            message = input('>Enter the private message: \n')
+            sock.send(message.encode('utf-8'))
+            FLAG = 0
