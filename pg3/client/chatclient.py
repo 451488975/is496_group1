@@ -135,5 +135,4 @@ if __name__ == '__main__':
             FLAG = 0
 
     # Close client socket
-    t1.join()
     sock.close()
