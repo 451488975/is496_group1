@@ -12,7 +12,7 @@
 # Import any necessary libraries below
 import socket
 import threading
-import sys, os, struct
+import sys, struct
 
 # Any global variables
 BUFFER = 1024
@@ -116,7 +116,7 @@ if __name__ == '__main__':
         elif command == 'PM':
             print('Peers Online:')
             users = sock.recv(BUFFER).decode('utf-8')
-            print(users, end='')
+            print(users)
             user = input('>Peer to message: ')
             user_len = len(user.encode('utf-8'))
             sock.send(struct.pack('i', user_len))
@@ -135,4 +135,5 @@ if __name__ == '__main__':
             FLAG = 0
 
     # Close client socket
+    t1.join()
     sock.close()

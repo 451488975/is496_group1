@@ -12,7 +12,7 @@
 # Import any necessary libraries below
 import socket
 import threading
-import sys, os, struct
+import sys, struct
 
 # Any global variables
 BUFFER = 1024
@@ -86,21 +86,16 @@ def chatroom (conn):
                 user = conn.recv(user_len).decode('utf-8')
             conn.send(struct.pack('i', 1)) # send user_online
             message = conn.recv(BUFFER)
-            private_message(message, conn, user)
+            private_message(message, user)
 
 
 def broadcast(message, conn):
     for client in CLIENTS:
-        # if client == conn:
-        #     client.send('Public message sent!'.encode('utf-8'))
-        # else:
-        #     client.send('\n**** Incoming public message ****: '.encode('utf-8') + message)
         if client != conn:
             client.send('\n**** Incoming public message ****:  '.encode('utf-8') + message)
 
 
-def private_message(message, conn, user):
-    # conn.send('Private message sent!'.encode('utf-8'))
+def private_message(message, user):
     index = USERNAME.index(user)
     CLIENTS[index].send('\n**** Incoming private message ****:  '.encode('utf-8') + message)
 
