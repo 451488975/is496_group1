@@ -60,8 +60,7 @@ def chatroom (conn):
     # Use a loop to handle the operations (i.e., BM, PM, EX)
     while True:
         # Receive command from client
-        data = conn.recv(BUFFER).decode('utf-8').split(':')
-        command = data[1]
+        command = conn.recv(BUFFER).decode('utf-8')
 
         # According to the command, execute different function
         if command == 'EX':
@@ -76,31 +75,34 @@ def chatroom (conn):
         elif command == 'PM':
             users = ''
             for user in USERNAME:
-                users += user + '\n'
+                if user != username:
+                    users += user + '\n'
             conn.send(users.encode('utf-8'))
             user_len = struct.unpack('i', conn.recv(4))[0]
             user = conn.recv(user_len).decode('utf-8')
             while user not in USERNAME:
-                conn.send(struct.pack('i', 0))
+                conn.send(struct.pack('i', 0)) # send user_online
                 user_len = struct.unpack('i', conn.recv(4))[0]
                 user = conn.recv(user_len).decode('utf-8')
-            conn.send(struct.pack('i', 1))
+            conn.send(struct.pack('i', 1)) # send user_online
             message = conn.recv(BUFFER)
             private_message(message, conn, user)
 
 
 def broadcast(message, conn):
     for client in CLIENTS:
-        if client == conn:
-            client.send('Public message sent!'.encode('utf-8'))
-        else:
-            client.send('\n**** Incoming public message ****: '.encode('utf-8') + message)
+        # if client == conn:
+        #     client.send('Public message sent!'.encode('utf-8'))
+        # else:
+        #     client.send('\n**** Incoming public message ****: '.encode('utf-8') + message)
+        if client != conn:
+            client.send('\n**** Incoming public message ****:  '.encode('utf-8') + message)
 
 
 def private_message(message, conn, user):
-    conn.send('Private message sent!'.encode('utf-8'))
+    # conn.send('Private message sent!'.encode('utf-8'))
     index = USERNAME.index(user)
-    CLIENTS[index].send('\n**** Incoming private message ****: '.encode('utf-8') + message)
+    CLIENTS[index].send('\n**** Incoming private message ****:  '.encode('utf-8') + message)
 
 
 if __name__ == '__main__':
