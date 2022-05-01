@@ -163,7 +163,7 @@ def tock():
         reset()
         countdown("<-- SCORE")
 
-    #Finally, redraw the current state
+    # Finally, redraw the current state
     else:
         draw(ball_x, ball_y, pad_left_y, pad_right_y, score_l, score_r)
 
