@@ -3,11 +3,7 @@
 # Name and NetId of each member:
 # Member 1: River Liu, ll24
 # Member 2: Yuxuan Jiang, yj26
-# Member 3: Zhizhou Xu, zhizhou6 11
-
-# Note: 
-# This starter code is optional. Feel free to develop your own solution. 
-
+# Member 3: Zhizhou Xu, zhizhou6
 
 # Import any necessary libraries below
 import socket

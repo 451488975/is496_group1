@@ -5,12 +5,10 @@
 # Member 2: Yuxuan Jiang, yj26
 # Member 3: Zhizhou Xu, zhizhou6
 
-
 # Import any necessary libraries below
 import socket
 import sys
 from pg1lib import *
-
 
 # Beginning of Part 1
 # Define a buffer size for the message to be read from the UDP socket

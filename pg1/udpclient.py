@@ -12,7 +12,6 @@ import sys
 import time
 from pg1lib import *
 
-
 # Beginning of Part 1
 # Define a buffer size for the message to be read from the UDP socket
 BUFFER = 2048

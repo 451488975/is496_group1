@@ -5,10 +5,6 @@
 # Member 2: Yuxuan Jiang, yj26
 # Member 3: Zhizhou Xu, zhizhou6
 
-# Note: 
-# This starter code is optional. Feel free to develop your own solution. 
-
-
 # Import any necessary libraries below
 import socket
 import threading

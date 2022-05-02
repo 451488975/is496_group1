@@ -5,11 +5,6 @@
 # Member 2: Yuxuan Jiang, yj26
 # Member 3: Zhizhou Xu, zhizhou6
 
-# Note: 
-# This starter code is optional. Feel free to develop your own solution to Part 1. 
-# The finished code for Part 1 can also be used for Part 2 of this assignment. 
-
-
 # Import any necessary libraries below
 import sys
 import socket
