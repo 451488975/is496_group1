@@ -16,7 +16,7 @@ import socket
 sys.path.append('../')
 from utilities import *
 
-############## Beginning of Part 1 ##############
+# Beginning of Part 1
 # define a buffer size for the message to be read from the TCP socket
 BUFFER = 4096
 
@@ -68,12 +68,10 @@ def part1():
     sock.close()
 
 
-############## End of Part 1 ##############
+# End of Part 1
 
 
-############## Beginning of Part 2 ##############
-
-
+# Beginning of Part 2
 # List all the files and directories in current server working directory
 # Params: socket
 def ls(sock):
@@ -205,7 +203,7 @@ def up(sock, filename):
 def rm(sock, filename):
     # send file name to server
     send_msg(sock, filename.encode('utf-8'))
-    
+
     # check if the file exists
     acknowledgement = struct.unpack('i', sock.recv(4))[0]
 
@@ -355,7 +353,7 @@ def part2():
             print('Failed to resolve command.')
 
 
-############## End of Part 2 ##############
+# End of Part 2
 
 
 if __name__ == '__main__':

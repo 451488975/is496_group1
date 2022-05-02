@@ -1,4 +1,6 @@
-import curses, random, time
+import curses
+import random
+import time
 import threading
 
 
@@ -9,10 +11,9 @@ def init_curses():
     curses.cbreak()
     curses.curs_set(0)
 
-    # curses.refresh() #??
     win = curses.newwin(HEIGHT, WIDTH)
     win.keypad(True)
-    win.box(0,0)
+    win.box(0, 0)
     win.refresh()
     win.nodelay(True)
     curses.use_default_colors()
@@ -29,7 +30,7 @@ def reset():
     ball_x = int(WIDTH / 2)
     pad_left_y = pad_right_y = ball_y = int(HEIGHT / 2)
     # dx is randomly either -1 or 1
-    dx = (random.randint(1,2) % 2) * 2 - 1
+    dx = (random.randint(1, 2) % 2) * 2 - 1
     dy = 0
     # Draw to reset everything visually
     draw(ball_x, ball_y, pad_left_y, pad_right_y, score_l, score_r)
@@ -80,8 +81,8 @@ def countdown(message):
 
     h = 4
     w = len(message) + 4
-    popup = curses.newwin(h, w, int((HEIGHT-h) / 2), int((WIDTH-w) / 2))#, (LINES - h) / 2, (COLS - w) / 2);
-    popup.box(0,0)
+    popup = curses.newwin(h, w, int((HEIGHT-h) / 2), int((WIDTH-w) / 2))
+    popup.box(0, 0)
     popup.addstr(1, 2, message)
 
     for countdown in range(3, 0, -1):
@@ -99,19 +100,19 @@ def listen_input(win):
     Listen to keyboard input
     Updates global pad positions
     """
-    global pad_left_y, pad_right_y, ACTIVE#, win
+    global pad_left_y, pad_right_y, ACTIVE
     while ACTIVE:
         key = win.getch()
         curses.flushinp()
 
         if key == curses.KEY_UP:
-            pad_right_y-=1
+            pad_right_y -= 1
         elif key == curses.KEY_DOWN:
-            pad_right_y+=1
+            pad_right_y += 1
         elif key == ord('w'):
-            pad_left_y-=1
+            pad_left_y -= 1
         elif key == ord('s'):
-            pad_left_y+=1
+            pad_left_y += 1
         time.sleep(0.2)
 
 
@@ -175,7 +176,7 @@ def main(std_scr):
     reset()
     countdown("Starting Game")
 
-    thread = threading.Thread(name ='daemon', target=listen_input, args= (win,))
+    thread = threading.Thread(name='daemon', target=listen_input, args=(win,))
     thread.setDaemon(True)
     thread.start()
 

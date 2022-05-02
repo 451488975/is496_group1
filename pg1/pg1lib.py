@@ -15,7 +15,8 @@ private_key = rsa.generate_private_key(
     backend=default_backend()
 )
 
-def getPubKey():
+
+def get_pub_key():
     """
     Generate and return an encryption key
     
@@ -31,6 +32,7 @@ def getPubKey():
 
     return public_key_str_b64
 
+
 def encrypt(message, pubkey):
     """
     Encrypt a message with peer's encryption key
@@ -42,7 +44,6 @@ def encrypt(message, pubkey):
     Returns:
         bytes: base64 encoded ciphertext
     """
-    # pubkey = pubkey.decode()
     public_key_str = base64.b64decode(pubkey)
     public_key = serialization.load_pem_public_key(
         public_key_str,

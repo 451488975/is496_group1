@@ -8,16 +8,17 @@
 
 # Import any necessary libraries below
 import socket
-import sys, time
+import sys
+import time
 from pg1lib import *
 
 
-############## Beginning of Part 1 ##############
+# Beginning of Part 1
 # Define a buffer size for the message to be read from the UDP socket
 BUFFER = 2048
 
 
-def part1 ():
+def part1():
     print("********** PART 1 **********")
     # Fill in the hostname and port number
     hostname = 'student00.ischool.illinois.edu'
@@ -50,18 +51,12 @@ def part1 ():
 
     # Close the socket
     sock.close()
+# End of Part 1
 
 
-############## End of Part 1 ##############
-
-
-
-
-############## Beginning of Part 2 ##############
+# Beginning of Part 2
 # Note: any functions/variables for Part 2 will go here
-
-
-def part2 (argv):
+def part2(argv):
     print("********** PART 2 **********")
     # Fill in the hostname and port number
     hostname = argv[1]
@@ -79,7 +74,7 @@ def part2 (argv):
 
     sin = (host, port)
 
-    pubkey = getPubKey()
+    pubkey = get_pub_key()
 
     # Create a datagram socket
     try:
@@ -119,9 +114,7 @@ def part2 (argv):
 
     # Close the socket
     sock.close()
-
-
-############## End of Part 2 ##############
+# End of Part 2
 
 
 if __name__ == '__main__':

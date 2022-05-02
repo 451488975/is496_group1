@@ -12,7 +12,7 @@ import sys
 from pg1lib import *
 
 
-############## Beginning of Part 1 ##############
+# Beginning of Part 1
 # Define a buffer size for the message to be read from the UDP socket
 BUFFER = 2048
 
@@ -37,7 +37,7 @@ def init_sock(host, port):
     return sock
 
 
-def part1 ():
+def part1():
     print("********** PART 1 **********")
     # Fill in the IP address of the host and the port number
     host = '192.17.61.22'
@@ -64,24 +64,18 @@ def part1 ():
     # Close the socket
         break
     sock.close()
+# End of Part 1
 
 
-############## End of Part 1 ##############
-
-
-
-
-############## Beginning of Part 2 ##############
-
-
-def part2 (argv):
+# Beginning of Part 2
+def part2(argv):
     print("********** PART 2 **********")
     # Fill in the IP address of the host and the port number
     host = '192.17.61.22'
     port = int(argv[1])
     sock = init_sock(host, port)
 
-    pubkey_server = getPubKey()
+    pubkey_server = get_pub_key()
 
     # Receive message from the client and record the address of the client socket
     while True:
@@ -122,9 +116,7 @@ def part2 (argv):
             print("Server Shutdown.")
             sock.close()
             break
-
-
-############## End of Part 2 ##############
+# End of Part 2
 
 
 if __name__ == '__main__':

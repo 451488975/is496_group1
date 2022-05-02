@@ -12,7 +12,8 @@
 # Import any necessary libraries below
 import socket
 import threading
-import sys, struct
+import sys
+import struct
 
 # Any global variables
 BUFFER = 1024
@@ -22,15 +23,15 @@ USERNAME = sys.argv[3]
 FLAG = 0
 
 
-"""
-The thread target function to handle any incoming message from the server.
-Args:
-    s: client socket
-Returns:
-    None
-Hint: you can use the first character of the message to distinguish different types of message
-"""
 def accept_messages(s):
+    """
+    The thread target function to handle any incoming message from the server.
+    Args:
+        s: client socket
+    Returns:
+        None
+    Hint: you can use the first character of the message to distinguish different types of message
+    """
     while True:
         try:
             message_received = s.recv(BUFFER).decode('utf-8')

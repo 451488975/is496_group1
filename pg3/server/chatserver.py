@@ -12,7 +12,8 @@
 # Import any necessary libraries below
 import socket
 import threading
-import sys, struct
+import sys
+import struct
 
 # Any global variables
 BUFFER = 1024
@@ -22,14 +23,14 @@ CLIENTS = []
 USERNAME = []
 
 
-"""
-The thread target function to handle the requests by a user after a socket connection is established.
-Args:
-    conn: specific connection with the client
-Returns:
-    None
-"""
-def chatroom (conn):
+def chatroom(conn):
+    """
+    The thread target function to handle the requests by a user after a socket connection is established.
+    Args:
+        conn: specific connection with the client
+    Returns:
+        None
+    """
     # Login/register the user
     username = conn.recv(BUFFER).decode('utf-8')
     user_confirm = 0
@@ -40,18 +41,18 @@ def chatroom (conn):
 
             # User existed, check password
             if user[0] == username:
-                conn.send(struct.pack('i', 1)) # send user_existed
+                conn.send(struct.pack('i', 1))  # send user_existed
                 user_confirm = 1
                 password = conn.recv(BUFFER).decode('utf-8')
                 while password != user[1].replace("\n", ""):
-                    conn.send(struct.pack('i', 0)) # send pwd_correct
+                    conn.send(struct.pack('i', 0))  # send pwd_correct
                     password = conn.recv(BUFFER).decode('utf-8')
-                conn.send(struct.pack('i', 1)) # send pwd_correct
+                conn.send(struct.pack('i', 1))  # send pwd_correct
                 break
 
     # User not existed, create new user
     if user_confirm == 0:
-        conn.send(struct.pack('i', 0)) # send user_existed
+        conn.send(struct.pack('i', 0))  # send user_existed
         password = conn.recv(BUFFER).decode('utf-8')
         with open('users.txt', 'a') as f:
             f.write(f'\n{username} {password}')
@@ -81,10 +82,10 @@ def chatroom (conn):
             user_len = struct.unpack('i', conn.recv(4))[0]
             user = conn.recv(user_len).decode('utf-8')
             while user not in USERNAME:
-                conn.send(struct.pack('i', 0)) # send user_online
+                conn.send(struct.pack('i', 0))  # send user_online
                 user_len = struct.unpack('i', conn.recv(4))[0]
                 user = conn.recv(user_len).decode('utf-8')
-            conn.send(struct.pack('i', 1)) # send user_online
+            conn.send(struct.pack('i', 1))  # send user_online
             message = conn.recv(BUFFER)
             private_message(message, user)
 

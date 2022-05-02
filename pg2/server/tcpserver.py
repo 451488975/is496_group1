@@ -17,7 +17,7 @@ import socket
 sys.path.append('../')
 from utilities import *
 
-############## Beginning of Part 1 ##############
+# Beginning of Part 1
 # Define a buffer size for the message to be read from the TCP socket
 BUFFER = 4096
 
@@ -77,14 +77,10 @@ def part1():
 
     # Close the socket
     sock.close()
+# End of Part 1
 
 
-############## End of Part 1 ##############
-
-
-############## Beginning of Part 2 ##############
-
-
+# Beginning of Part 2
 # List all the files and directories in current server working directory and send to client
 # Params: socket
 def ls(conn):
@@ -184,8 +180,6 @@ def rm(conn):
             else:
                 conn.send(struct.pack('i', 1))
     else:
-    # # file does not exist
-    # if result.stderr:
         conn.send(struct.pack('i', -1))
 
 
@@ -304,9 +298,7 @@ def part2():
         except KeyboardInterrupt:
             print('Server Shutdown.')
             break
-
-
-############## End of Part 2 ##############
+# End of Part 2
 
 
 if __name__ == '__main__':
