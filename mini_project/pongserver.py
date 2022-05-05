@@ -7,14 +7,18 @@ Member 3: Zhizhou Xu, zhizhou6 11
 """
 
 # Import Libraries
+from encodings import utf_8
 import socket
 import sys
+import time
+import curses
+import random
+import threading
 
 BUFFER = 1024
 HOST = '192.17.61.22'
 PORT = int(sys.argv[1])
-WAITING_USER = []
-
+PLAYERS = []
 
 if __name__ == '__main__':
     sin = (HOST, PORT)
@@ -33,5 +37,25 @@ if __name__ == '__main__':
         print('Failed to bind socket.')
         sys.exit()
 
+    print('Waiting...')
+    while len(PLAYERS) < 2:
+        player = sock.recvfrom(BUFFER)
+        player_addr = player[1]
+        PLAYERS.append(player_addr)
+        print(f'Player {len(PLAYERS)} has connected!')
+    
+    for addr in PLAYERS:
+        if addr == PLAYERS[0]:
+            acknowledgement = socket.htons(0)
+            sock.sendto(acknowledgement.to_bytes(2, 'big'), addr)
+        else:
+            acknowledgement = socket.htons(1)
+            sock.sendto(acknowledgement.to_bytes(2, 'big'), addr)
     while True:
-        print('Waiting...')
+        data = sock.recvfrom(BUFFER)
+        operation = data[0]
+        addr = data[1]
+        if addr == PLAYERS[0]:
+            sock.sendto(operation, PLAYERS[1])
+        else:
+            sock.sendto(operation, PLAYERS[0])
