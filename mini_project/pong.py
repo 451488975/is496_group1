@@ -46,6 +46,9 @@ def draw(ball_x, ball_y, pad_left_y, pad_right_y, score_l, score_r):
     score_l: Score of the left player
     score_r: Score of the right player
     """
+
+
+    
     win.clear()
     win.border() 
     # Center line
