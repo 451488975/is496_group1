@@ -7,13 +7,58 @@ Member 3: Zhizhou Xu, zhizhou6 11
 """
 
 # Import Libraries
+from email import message
+from encodings import utf_8
 import socket
 import sys
+import time
+import curses
+import random
+import threading
 
 BUFFER = 1024
 HOST = '192.17.61.22'
 PORT = int(sys.argv[1])
 PLAYERS = []
+
+
+def pong_game(difficulty: float):
+    global PLAYERS
+    for addr in PLAYERS:
+        if addr == PLAYERS[-1]:
+            sock.sendto(str(-difficulty).encode('utf-8'), addr)
+        elif addr == PLAYERS[-2]:
+            sock.sendto(str(difficulty).encode('utf-8'), addr)
+    refresh = 0
+    while True:
+        data = sock.recvfrom(BUFFER)
+        operation = data[0]
+        addr = data[1]
+        if operation.decode('utf-8').lower() in ['easy', 'medium', 'hard']:
+            PLAYERS.append(addr)
+            if len(PLAYERS) % 2 == 1:
+                print('Player 1 has connected!')
+                if operation.decode('utf-8').lower() == "easy":
+                    refresh = 0.08
+                elif operation.decode('utf-8').lower() == "medium":
+                    refresh = 0.04
+                elif operation.decode('utf-8').lower() == "hard":
+                    refresh = 0.02
+            else:
+                print('Player 2 has connected!')
+                if operation.decode('utf-8').lower() == "easy":
+                    refresh = (refresh + 0.08) / 2
+                elif operation.decode('utf-8').lower() == "medium":
+                    refresh = (refresh + 0.04) / 2
+                elif operation.decode('utf-8').lower() == "hard":
+                    refresh = (refresh + 0.02) / 2
+                print('Game started!')
+                pong_game(refresh)
+        elif (PLAYERS.index(addr) + 1) % 2 == 0:
+            sock.sendto(operation, PLAYERS[PLAYERS.index(addr) - 1])
+        else:
+            sock.sendto(operation, PLAYERS[PLAYERS.index(addr) + 1])
+
 
 if __name__ == '__main__':
     sin = (HOST, PORT)
@@ -33,31 +78,28 @@ if __name__ == '__main__':
         sys.exit()
 
     print('Waiting...')
+    refresh = 0
     while len(PLAYERS) < 2:
         player = sock.recvfrom(BUFFER)
+        message = player[0]
         player_addr = player[1]
         PLAYERS.append(player_addr)
-        print(f'Player {len(PLAYERS)} has connected!')
-    print('Lobby is currently in game, to start another game please close and start the server again.')
-    
-    for addr in PLAYERS:
-        if addr == PLAYERS[0]:
-            acknowledgement = socket.htons(0)
-            sock.sendto(acknowledgement.to_bytes(2, 'big'), addr)
+        if len(PLAYERS) == 1:
+            if message.decode('utf-8').lower() == "easy":
+                refresh = 0.08
+            elif message.decode('utf-8').lower() == "medium":
+                refresh = 0.04
+            elif message.decode('utf-8').lower() == "hard":
+                refresh = 0.02
         else:
-            acknowledgement = socket.htons(1)
-            sock.sendto(acknowledgement.to_bytes(2, 'big'), addr)
-    while True:
-        try:
-            data = sock.recvfrom(BUFFER)
-            operation = data[0]
-            addr = data[1]
-            if addr == PLAYERS[0]:
-                sock.sendto(operation, PLAYERS[1])
-            else:
-                sock.sendto(operation, PLAYERS[0])
-        except KeyboardInterrupt:
-            break
-
-    print('Server shutdown.')
-    sock.close()
+            if message.decode('utf-8').lower() == "easy":
+                refresh = (refresh + 0.08) / 2
+            elif message.decode('utf-8').lower() == "medium":
+                refresh = (refresh + 0.04) / 2
+            elif message.decode('utf-8').lower() == "hard":
+                refresh = (refresh + 0.02) / 2
+        print(f'Player {len(PLAYERS)} has connected!')
+    print('Game started!')
+    pong_game(refresh)
+    
+    
