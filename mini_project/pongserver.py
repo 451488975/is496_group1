@@ -25,7 +25,6 @@ BUFFER = 2048
 HOST = '192.17.61.22'
 PORT = int(sys.argv[1])
 NUM_PLAYERS = 4
-WAITING_USER = []
 PLAYERS = []
 
 
@@ -50,12 +49,15 @@ if __name__ == '__main__':
     
     print('Waiting...')
 
-    
+
     while len(PLAYERS) < 2:
         player = sock.recvfrom(BUFFER)
         player_addr = player[1]
+
         PLAYERS.append(player_addr)
         print(f'Player {len(PLAYERS)} has connected!')
+
+        
     
     for addr in PLAYERS:
         if addr == PLAYERS[0]:
