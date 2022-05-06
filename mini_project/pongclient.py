@@ -124,19 +124,26 @@ def listen_input(win):
     Listen to keyboard input
     Updates global pad positions
     """
-    global pad_left_y, pad_right_y, ACTIVE
+    global pad_left_y, pad_right_y, ACTIVE, sock, sin
     while ACTIVE:
         key = win.getch()
         curses.flushinp()
 
         if key == curses.KEY_UP:
             pad_right_y -= 1
+            sock.sendto(b'U', sin)
+
         elif key == curses.KEY_DOWN:
             pad_right_y += 1
+            sock.sendto(b'D', sin)
+
         elif key == ord('w'):
             pad_left_y -= 1
+            sock.sendto(b'U', sin)
+
         elif key == ord('s'):
             pad_left_y += 1
+            sock.sendto(b'D', sin)
         time.sleep(0.2)
 
 
@@ -192,6 +199,15 @@ def tock():
     else:
         draw(ball_x, ball_y, pad_left_y, pad_right_y, score_l, score_r)
 
+
+def recv_operation():
+    global pad_left_y, ACTIVE, sock
+    while ACTIVE:
+        data = sock.recvfrom(BUFFER)
+        if data[0] == b'U':
+            pad_left_y += 1
+        elif data[0] == b'D':
+         pad_left_y -= 1
 
 def main(std_scr):
     global win, ACTIVE, refresh
