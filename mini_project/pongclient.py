@@ -10,10 +10,8 @@ Member 3: Zhizhou Xu, zhizhou6 11
 import socket
 import sys
 import curses
-import random
 import time
 import threading
-
 
 BUFFER = 1024
 HOSTNAME = sys.argv[1]
@@ -45,7 +43,7 @@ def reset():
     global ball_x, ball_y, pad_left_y, pad_right_y, dx, dy, score_l, score_r, init_dx
     ball_x = int(WIDTH / 2)
     pad_left_y = pad_right_y = ball_y = int(HEIGHT / 2)
-    # dx is randomly either -1 or 1
+    # dx is always to the first player
     dx = init_dx
     dy = 0
     # Draw to reset everything visually
@@ -108,7 +106,6 @@ def countdown(message):
     popup.clear()
     popup.refresh()
     popup.erase()
-    pad_left_y = pad_right_y = int(HEIGHT / 2)
 
 
 def listen_input(win):
@@ -128,16 +125,6 @@ def listen_input(win):
             pad_right_y += 1
             sock.sendto(b'D', sin)
 
-        # other_player = sock.recvfrom(BUFFER)
-        # operation = other_player[0]
-        # if operation == b'U':
-        #     pad_left_y -= 1
-        # elif operation == b'D':
-        #     pad_left_y += 1
-        # elif key == ord('w'):
-        #     pad_left_y -= 1
-        # elif key == ord('s'):
-        #     pad_left_y += 1
         time.sleep(0.2)
 
 
@@ -200,8 +187,8 @@ def recv_operation():
         data = sock.recvfrom(BUFFER)
         if data[0] == b'U':
             pad_left_y += 1
-        else: pad_left_y -= 1
-
+        else:
+            pad_left_y -= 1
 
 
 def main(std_scr):
@@ -233,10 +220,7 @@ def main(std_scr):
         except KeyboardInterrupt:
             break
 
-    time.sleep(5)
     ACTIVE = False
-    thread1.join()
-    thread2.join()
     curses.nocbreak()
     win.keypad(False)
     curses.echo()
@@ -260,14 +244,6 @@ def set_vals(x: int):
     score_l = score_r = 0
     # thread status
     ACTIVE = True
-
-    # difficulty = input("Please select the difficulty level (easy, medium or hard): ")
-    # if difficulty.lower() == "easy":
-    #     refresh = 0.08
-    # elif difficulty.lower() == "medium":
-    #     refresh = 0.04
-    # elif difficulty.lower() == "hard":
-    #     refresh = 0.02
     refresh = 0.08
 
 
@@ -296,4 +272,3 @@ if __name__ == '__main__':
     if ack != -1:
         set_vals(init_dx)
         curses.wrapper(main)
-

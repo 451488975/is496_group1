@@ -7,13 +7,8 @@ Member 3: Zhizhou Xu, zhizhou6 11
 """
 
 # Import Libraries
-from encodings import utf_8
 import socket
 import sys
-import time
-import curses
-import random
-import threading
 
 BUFFER = 1024
 HOST = '192.17.61.22'
@@ -43,6 +38,7 @@ if __name__ == '__main__':
         player_addr = player[1]
         PLAYERS.append(player_addr)
         print(f'Player {len(PLAYERS)} has connected!')
+    print('Lobby is currently in game, to start another game please close and start the server again.')
     
     for addr in PLAYERS:
         if addr == PLAYERS[0]:
@@ -52,10 +48,16 @@ if __name__ == '__main__':
             acknowledgement = socket.htons(1)
             sock.sendto(acknowledgement.to_bytes(2, 'big'), addr)
     while True:
-        data = sock.recvfrom(BUFFER)
-        operation = data[0]
-        addr = data[1]
-        if addr == PLAYERS[0]:
-            sock.sendto(operation, PLAYERS[1])
-        else:
-            sock.sendto(operation, PLAYERS[0])
+        try:
+            data = sock.recvfrom(BUFFER)
+            operation = data[0]
+            addr = data[1]
+            if addr == PLAYERS[0]:
+                sock.sendto(operation, PLAYERS[1])
+            else:
+                sock.sendto(operation, PLAYERS[0])
+        except KeyboardInterrupt:
+            break
+
+    print('Server shutdown.')
+    sock.close()
