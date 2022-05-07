@@ -3,14 +3,13 @@ IS496: Computer Networks (Spring 2022)
 Mini Project - Online Pong Game
 Member 1: River Liu, ll24
 Member 2: Yuxuan Jiang, yj26
-Member 3: Zhizhou Xu, zhizhou6 11
+Member 3: Zhizhou Xu, zhizhou6
 """
 
 # Import Libraries
 import socket
 import sys
 import curses
-import random
 import time
 import threading
 
@@ -128,16 +127,6 @@ def listen_input(win):
             pad_right_y += 1
             sock.sendto(b'D', sin)
 
-        # other_player = sock.recvfrom(BUFFER)
-        # operation = other_player[0]
-        # if operation == b'U':
-        #     pad_left_y -= 1
-        # elif operation == b'D':
-        #     pad_left_y += 1
-        # elif key == ord('w'):
-        #     pad_left_y -= 1
-        # elif key == ord('s'):
-        #     pad_left_y += 1
         time.sleep(0.2)
 
 
@@ -200,8 +189,8 @@ def recv_operation():
         data = sock.recvfrom(BUFFER)
         if data[0] == b'U':
             pad_left_y += 1
-        else: pad_left_y -= 1
-
+        else:
+            pad_left_y -= 1
 
 
 def main(std_scr):
@@ -233,10 +222,7 @@ def main(std_scr):
         except KeyboardInterrupt:
             break
 
-    time.sleep(5)
     ACTIVE = False
-    thread1.join()
-    thread2.join()
     curses.nocbreak()
     win.keypad(False)
     curses.echo()
@@ -261,13 +247,6 @@ def set_vals(x: int, difficulty: float):
     # thread status
     ACTIVE = True
 
-    # difficulty = input("Please select the difficulty level (easy, medium or hard): ")
-    # if difficulty.lower() == "easy":
-    #     refresh = 0.08
-    # elif difficulty.lower() == "medium":
-    #     refresh = 0.04
-    # elif difficulty.lower() == "hard":
-    #     refresh = 0.02
     refresh = difficulty
 
 
@@ -295,8 +274,8 @@ if __name__ == '__main__':
     if difficulty < 0:
         init_dx = -1
         difficulty = -difficulty
-    else: init_dx = 1
+    else:
+        init_dx = 1
 
     set_vals(init_dx, difficulty)
     curses.wrapper(main)
-

@@ -3,18 +3,12 @@ IS496: Computer Networks (Spring 2022)
 Mini Project - Online Pong Game
 Member 1: River Liu, ll24
 Member 2: Yuxuan Jiang, yj26
-Member 3: Zhizhou Xu, zhizhou6 11
+Member 3: Zhizhou Xu, zhizhou6
 """
 
 # Import Libraries
-from email import message
-from encodings import utf_8
 import socket
 import sys
-import time
-import curses
-import random
-import threading
 
 BUFFER = 1024
 HOST = '192.17.61.22'
@@ -100,6 +94,9 @@ if __name__ == '__main__':
                 refresh = (refresh + 0.02) / 2
         print(f'Player {len(PLAYERS)} has connected!')
     print('Game started!')
-    pong_game(refresh)
-    
-    
+    try:
+        pong_game(refresh)
+    except KeyboardInterrupt:
+        print('Server Shutdown.')
+
+    sock.close()
