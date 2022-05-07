@@ -11,9 +11,6 @@ import socket
 import sys
 import curses
 import random
-
-
-
 import time
 import threading
 
@@ -21,7 +18,6 @@ BUFFER = 1024
 HOSTNAME = sys.argv[1]
 PORT = int(sys.argv[2])
 
-############### GAME ###############
 def init_curses():
     global win
 
@@ -38,7 +34,6 @@ def init_curses():
     for i in range(0, curses.COLORS):
         curses.init_pair(i, i, -1)
 
-
 def reset():
     """
     Return ball and paddles to starting positions
@@ -53,7 +48,6 @@ def reset():
     # Draw to reset everything visually
     draw(ball_x, ball_y, pad_left_y, pad_right_y, score_l, score_r)
 
-
 def draw(ball_x, ball_y, pad_left_y, pad_right_y, score_l, score_r):
     """
     Draw the current game state to the screen
@@ -64,14 +58,11 @@ def draw(ball_x, ball_y, pad_left_y, pad_right_y, score_l, score_r):
     score_l: Score of the left player
     score_r: Score of the right player
     """
-
-
-    
     win.clear()
-    win.border() 
+    win.border()
     # Center line
     for i in range(1, HEIGHT, 2):
-        win.addch(i, 21, '|', curses.color_pair(1))  
+        win.addch(i, 21, '|', curses.color_pair(1))
     # Score
     win.addstr(1, int(WIDTH / 2) - 3, f'{score_l:2d}', curses.color_pair(2))
     win.addstr(1, int(WIDTH / 2) + 1, f'{score_r:2d}', curses.color_pair(2))
@@ -90,10 +81,6 @@ def draw(ball_x, ball_y, pad_left_y, pad_right_y, score_l, score_r):
             win.addch(i, PAD_LEFT_X, '#', curses.color_pair(2))
     # Print the virtual window (win) to the screen
     win.refresh()
-    
-  
-    
-
 
 def countdown(message):
     """
@@ -116,36 +103,26 @@ def countdown(message):
     popup.clear()
     popup.refresh()
     popup.erase()
-    pad_left_y = pad_right_y = int(HEIGHT / 2)
-
 
 def listen_input(win):
     """
     Listen to keyboard input
     Updates global pad positions
     """
-    global pad_left_y, pad_right_y, ACTIVE, sock, sin
+    global pad_left_y, pad_right_y, ACTIVE
     while ACTIVE:
         key = win.getch()
         curses.flushinp()
 
         if key == curses.KEY_UP:
             pad_right_y -= 1
-            sock.sendto(b'U', sin)
-
         elif key == curses.KEY_DOWN:
             pad_right_y += 1
-            sock.sendto(b'D', sin)
-
         elif key == ord('w'):
             pad_left_y -= 1
-            sock.sendto(b'U', sin)
-
         elif key == ord('s'):
             pad_left_y += 1
-            sock.sendto(b'D', sin)
         time.sleep(0.2)
-
 
 def tock():
     """
@@ -198,17 +175,6 @@ def tock():
     # Finally, redraw the current state
     else:
         draw(ball_x, ball_y, pad_left_y, pad_right_y, score_l, score_r)
-
-
-def recv_operation():
-    global pad_left_y, ACTIVE, sock
-    while ACTIVE:
-        data = sock.recvfrom(BUFFER)
-        if data[0] == b'U':
-            pad_left_y += 1
-        elif data[0] == b'D':
-         pad_left_y -= 1
-
 def main(std_scr):
     global win, ACTIVE, refresh
 
@@ -231,21 +197,33 @@ def main(std_scr):
             if to_sleep > 0:
                 time.sleep(to_sleep)
             else:
-                time.sleep(refresh/2)
+                time.sleep(refresh / 2)
         except KeyboardInterrupt:
             break
 
-    time.sleep(5)
-    ACTIVE = False
-    thread.join()
-    curses.nocbreak()
-    win.keypad(False)
-    curses.echo()
-    curses.endwin()
-
+def set_main(init_dx:int):
+    global HEIGHT,WIDTH,PAD_LEFT_X,PAD_RIGHT_X,ball_x,ball_y,dx,dy,pad_left_y,pad_right_y,score_l,score_r,ACTIVE,refresh
+    HEIGHT = 21
+    WIDTH = 43
+    PAD_LEFT_X = 1
+    PAD_RIGHT_X = WIDTH - 2
+    # Position of ball
+    ball_x = ball_y = 0
+    # Movement of ball
+    dx = init_dx
+    dy = 0
+    # Position of paddles
+    pad_left_y = pad_right_y = 0
+    # Player scores
+    score_l = 0
+    score_r = 0
+    # thread status
+    ACTIVE = True
+    refresh = 0.08
 
 if __name__ == '__main__':
     # Get host IP using hostname
+    message = b"Hello World"
     try:
         host = socket.gethostbyname(HOSTNAME)
     except socket.error:
@@ -260,28 +238,16 @@ if __name__ == '__main__':
     except socket.error:
         print('Failed to create socket.')
         sys.exit()
+    try:
+        sock.connect(sin)
+    except socket.error:
+        print("Failed to connect")
+        sys.exit()
+    sock.sendto(message,sin)
+    data = sock.recvfrom(BUFFER)
+    acknowledge = socket.ntohs(int.from_bytes(data[0],'big'))
+    init_dx = acknowledge * 2 -1
+    if acknowledge != -1:
+        set_main(init_dx)
+        curses.wrapper(main)
 
-    HEIGHT = 21
-    WIDTH = 43
-    PAD_LEFT_X = 1
-    PAD_RIGHT_X = WIDTH - 2
-    # Position of ball
-    ball_x = ball_y = 0
-    # Movement of ball
-    dx = dy = 0
-    # Position of paddles
-    pad_left_y = pad_right_y = 0
-    # Player scores
-    score_l = score_r = 0
-    # thread status
-    ACTIVE = True
-
-    difficulty = input("Please select the difficulty level (easy, medium or hard): ")
-    if difficulty.lower() == "easy":
-        refresh = 0.08
-    elif difficulty.lower() == "medium":
-        refresh = 0.04
-    elif difficulty.lower() == "hard":
-        refresh = 0.02
-
-    curses.wrapper(main)

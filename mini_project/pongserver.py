@@ -10,23 +10,12 @@ Member 3: Zhizhou Xu, zhizhou6 11
 from encodings import utf_8
 import socket
 import sys
-
-
-import curses
-import random
-import time
 import threading
-from encodings import utf_8
 
-NUM_PLAYERS = 4
-
-
-BUFFER = 2048
+BUFFER = 1024
 HOST = '192.17.61.22'
-PORT = int(sys.argv[1])
-NUM_PLAYERS = 4
-PLAYERS = []
-
+PORT = 41002
+CLIENTS = []
 
 
 if __name__ == '__main__':
@@ -46,32 +35,28 @@ if __name__ == '__main__':
         print('Failed to bind socket.')
         sys.exit()
 
-    
     print('Waiting...')
+    while len(CLIENTS)<2:
+        client = sock.recvfrom(BUFFER)
+        cli_addr = client[1]
+        CLIENTS.append(cli_addr)
+        print(f'Client {len(CLIENTS)} has connected...')
 
-
-    while len(PLAYERS) < 2:
-        player = sock.recvfrom(BUFFER)
-        player_addr = player[1]
-
-        PLAYERS.append(player_addr)
-        print(f'Player {len(PLAYERS)} has connected!')
-
-        
-    
-    for addr in PLAYERS:
-        if addr == PLAYERS[0]:
-            acknowledgement = socket.htons(0)
-            sock.sendto(acknowledgement.to_bytes(2, 'big'), addr)
+    for user in CLIENTS:
+        if user == CLIENTS[0]:
+            acknowledge = socket.htons(0)
+            sock.sendto(acknowledge.to_bytes(2,'big'),user)
         else:
-            acknowledgement = socket.htons(1)
-            sock.sendto(acknowledgement.to_bytes(2, 'big'), addr)
+            acknowledge = socket.htons(1)
+            sock.sendto(acknowledge.to_bytes(2,'big'),user)
     while True:
         data = sock.recvfrom(BUFFER)
         operation = data[0]
-        addr = data[1]
-        if addr == PLAYERS[0]:
-            sock.sendto(operation, PLAYERS[1])
+        user = data[1]
+        # If the received operation is from client1
+        if user == CLIENTS[0]:
+            sock.sendto(operation,CLIENTS[1])   #The server forwards the operation to client2
+        # If the received operation is from client2
         else:
-            sock.sendto(operation, PLAYERS[0])
- 
+            sock.sendto(operation,CLIENTS[0])   #If the received operation is from client2
+

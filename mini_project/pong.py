@@ -4,7 +4,6 @@ import time
 import threading
 
 
-
 def init_curses():
     global win
 
@@ -47,9 +46,6 @@ def draw(ball_x, ball_y, pad_left_y, pad_right_y, score_l, score_r):
     score_l: Score of the left player
     score_r: Score of the right player
     """
-
-
-    
     win.clear()
     win.border() 
     # Center line
@@ -96,7 +92,6 @@ def countdown(message):
     popup.clear()
     popup.refresh()
     popup.erase()
-    pad_left_y = pad_right_y = int(HEIGHT / 2)
 
 
 def listen_input(win):
@@ -220,7 +215,8 @@ if __name__ == '__main__':
     # Position of paddles
     pad_left_y = pad_right_y = 0
     # Player scores
-    score_l = score_r = 0
+    score_l = 10
+    score_r = 0
     # thread status
     ACTIVE = True
 
