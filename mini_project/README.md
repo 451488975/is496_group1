@@ -15,7 +15,13 @@ This project is an Online Pong Game that allows two different machines play the 
 Before running the scripts, please put `pongserver.py` in Student Machine `student00`.
 
 
-## Run the Game
+## Project File Structure
+    mini_project
+        - pongclent.py
+        - pongserver.py
+
+
+## Example Command
 To run the game, after entering the directory with all the scripts, run following command
 
 **Server (`student00`)**
