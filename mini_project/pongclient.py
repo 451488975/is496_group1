@@ -13,7 +13,6 @@ import curses
 import time
 import threading
 
-
 BUFFER = 1024
 HOSTNAME = sys.argv[1]
 PORT = int(sys.argv[2])
@@ -107,7 +106,6 @@ def countdown(message):
     popup.clear()
     popup.refresh()
     popup.erase()
-    pad_left_y = pad_right_y = int(HEIGHT / 2)
 
 
 def listen_input(win):
@@ -279,3 +277,5 @@ if __name__ == '__main__':
 
     set_vals(init_dx, difficulty)
     curses.wrapper(main)
+
+    sock.close()
